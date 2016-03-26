@@ -3,7 +3,7 @@ from scrapy.contrib.spiders import CrawlSpider, Rule
 from errata.items import ErrataItem, ExtractItem
 from errata.sele_helper import get_kerberos_auth_headers
 from scrapy.contrib.loader import ItemLoader
-from config import url, base_url
+from errata.config import url, base_url
 
 class ErrataSpider(CrawlSpider):
     headers = get_kerberos_auth_headers()

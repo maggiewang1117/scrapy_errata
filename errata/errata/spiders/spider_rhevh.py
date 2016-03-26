@@ -3,7 +3,7 @@ from scrapy.contrib.spiders import CrawlSpider, Rule
 from errata.items import ErrataItem, ExtractItem
 from errata.sele_helper import get_kerberos_auth_headers
 from scrapy.contrib.loader import ItemLoader
-from config import url, base_url
+from errata.config import url_rhevh, base_url
 from scrapy.utils.url import urljoin_rfc
 
 class RHEVHSpider(CrawlSpider):
@@ -17,7 +17,7 @@ class RHEVHSpider(CrawlSpider):
         )
 
     def make_requests_from_url(self, url):
-        return scrapy.Request(url, headers=ErrataSpider.headers,
+        return scrapy.Request(url, headers=RHEVHSpider.headers,
                               callback=self.parse_item)
 
     def parse_item(self, response):
@@ -28,10 +28,13 @@ class RHEVHSpider(CrawlSpider):
         for td in response.xpath('//tr'):
             a = td.xpath('td')
             # list_text = a.xpath('a/text()').extract()
-            item['advisory'] = a.xpath('a/text()').re(r'^RHBA-.*')
-            item['build_name'] = a.xpath('a/text()').re(r'ovirt.*')
+            item['advisory'] = a.xpath('a/text()').re(r'^RH.*')
+            item['build_name'] = a.xpath('a/text()').re(r'rhev.*')
             item['tag'] = a.xpath('text()').re(r'RH.*')
-            item['summary'] = a.xpath('text()').re('.*bug.*')
+            
+            summary = a.xpath('text()').extract()
+            if len(summary) != 0:
+                item['summary'] = summary[2]
             # item['text'] = a.xpath('text()').extract()
             # item['a_text'] = a.xpath('a/text()').extract()
             item['release_date'] = a.xpath('@title').extract()
