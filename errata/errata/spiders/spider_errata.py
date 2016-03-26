@@ -1,9 +1,9 @@
 import scrapy
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from errata.items import ErrataItem, ExtractItem
-from errata.sele_helper import get_kerberos_auth_headers
+from errata.helper.sele_helper import get_kerberos_auth_headers
 from scrapy.contrib.loader import ItemLoader
-from errata.config import url, base_url
+from errata.helper.config import url, base_url
 
 class ErrataSpider(CrawlSpider):
     headers = get_kerberos_auth_headers()

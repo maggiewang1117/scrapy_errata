@@ -1,9 +1,9 @@
 import scrapy
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from errata.items import ErrataItem, ExtractItem
-from errata.sele_helper import get_kerberos_auth_headers
+from errata.helper.sele_helper import get_kerberos_auth_headers
 from scrapy.contrib.loader import ItemLoader
-from errata.config import url_rhevh, base_url
+from errata.helper.config import url_rhevh, base_url
 from scrapy.utils.url import urljoin_rfc
 
 class RHEVHSpider(CrawlSpider):
