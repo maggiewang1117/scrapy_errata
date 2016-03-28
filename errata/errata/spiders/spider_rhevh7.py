@@ -3,14 +3,14 @@ from scrapy.contrib.spiders import CrawlSpider, Rule
 from errata.items import ErrataItem, ExtractItem
 from errata.helper.sele_helper import get_kerberos_auth_headers
 from scrapy.contrib.loader import ItemLoader
-from errata.helper.config import url_rhevh, base_url
+from errata.helper.config import url_rhevh7, base_url
 from scrapy.utils.url import urljoin_rfc
 
 class RHEVHSpider(CrawlSpider):
     headers = get_kerberos_auth_headers()
     name = "scrapy_rhevh"
     allowed_domains = ["redhat.com"]
-    start_urls = [url_rhevh]
+    start_urls = [url_rhevh7]
 
     rules = (
 
