@@ -14,4 +14,12 @@ SPIDER_MODULES = ['errata.spiders']
 NEWSPIDER_MODULE = 'errata.spiders'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'errata (+http://www.yourdomain.com)'
+# USER_AGENT = 'errata (+http://www.yourdomain.com)'
+
+COOKIES_ENABLED = False
+
+ITEM_PIPELINES = {
+    # 'errata.pipelines.CsdnblogPipeline': 300,
+    # 'errata.pipelines.ErrataPipeline': 300,
+    'errata.pipelines.BuildPipeline': 300
+}

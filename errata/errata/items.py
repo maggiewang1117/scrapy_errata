@@ -29,3 +29,14 @@ class DmozItem(scrapy.Item):
     title = scrapy.Field()
     link = scrapy.Field()
     desc = scrapy.Field()
+
+
+class CsdnblogItem(scrapy.Item):
+    article_name = scrapy.Field()
+    article_url = scrapy.Field()
+
+class BuildItem(scrapy.Item):
+    rhevh_name = scrapy.Field()
+    ovirt_node_name = scrapy.Field()
+    release_name = scrapy.Field()
+    rhevm_appliance_name = scrapy.Field()

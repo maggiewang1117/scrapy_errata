@@ -1,6 +1,5 @@
 import os
 import time
-import requests
 import kerberos
 from selenium import webdriver
 

@@ -22,7 +22,7 @@ class ErrataSpider(CrawlSpider):
     def parse_item(self, response):
         self.log("First try!")
         item = ErrataItem()
-        base_url = "https://errata.devel.redhat.com"
+        # base_url = "https://errata.devel.redhat.com"
 
         for td in response.xpath('//tr'):
             a = td.xpath('td')
@@ -38,34 +38,4 @@ class ErrataSpider(CrawlSpider):
             if len(links) != 0:
                 item['links'] = base_url + a.xpath('a/@href').re('/advi.*')[0]
             yield item
-            # item['links'] = links[0]
-            # yield item
-            # ext_item = ExtractItem()
-            # ext_item['build_name'] = item.get('text')
-            # print list_text
-
-            # item['advisory'] = a.xpath('a/text()').extract(0)
-            # item['advisory'] = list_text[0]
-            # item['build_name'] = list_text[1]
-            # print a.xpath('text()').extract()
-            # print a.xpath('text()').extract()
-            # print a.xpath('a/text()').extract()
-            # print a.xpath('text()').extract()
-            # print a.xpath('@title').extract()
-                # item['advisory'] = i.xpath('td/text()').extract()
-                # item['tag'] = i.xpath('td').extract()
-                # item['release_date'] = i.xpath('td/@title').extract()
-                # item['build_name'] = i.xpath('td/text()').extract()
-                # item['summary'] = i.xpath('td/text()').extract()
-                # yield item
-
-
-        # for sel in response.xpath('//tr/td'):
-        #     item = ErrataItem()
-        #     item['tag'] = sel.xpath('a/@title').extract()
-        #     item['link'] = sel.xpath().extract()
-        #     item['desc'] = sel.xpath('text()').extract()
-        #     yield item
-        # item = ErrataItem()
-        # l1 = response.xpath('//tr')
-        # self.log(l1)
+            
