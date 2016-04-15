@@ -1,5 +1,6 @@
 import scrapy
 import pymongo
+import time
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from errata.items import ErrataItem, ExtractItem
 from errata.helper.sele_helper import get_kerberos_auth_headers
@@ -46,7 +47,10 @@ class RHEVHSpider(CrawlSpider):
             # item['text'] = a.xpath('text()').extract()
             # item['a_text'] = a.xpath('a/text()').extract()
             if a.xpath('@title').extract():
-                item['release_date'] = a.xpath('@title').extract()[0]
+                org_date = a.xpath('@title').extract()[0]
+                item['release_date'] = self.format_date(org_date)
+
+                # item['release_date'] = a.xpath('@title').extract()[0]
             links = a.xpath('a/@href').re('/advi.*')
             if len(links) != 0:
                 item['links'] = urljoin_rfc(base_url, a.xpath('a/@href').re('/advi.*')[0])
@@ -63,3 +67,9 @@ class RHEVHSpider(CrawlSpider):
         
         cli.close()
         return ret
+
+    def format_date(self, org_date):
+        mid_date = time.strptime(org_date, "%a %b %d %H:%M:%S %Z %Y")
+        formated_date = time.strftime("%Y-%m-%d", mid_date)
+        return formated_date
+
