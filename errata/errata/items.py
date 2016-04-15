@@ -19,6 +19,8 @@ class ErrataItem(scrapy.Item):
     summary = scrapy.Field()
     text = scrapy.Field()
     a_text = scrapy.Field()
+    ovirt_node_name = scrapy.Field()
+    rhevm_appliance = scrapy.Field()
 
 class ExtractItem(scrapy.Item):
     build_name = scrapy.Field()
@@ -40,3 +42,12 @@ class BuildItem(scrapy.Item):
     ovirt_node_name = scrapy.Field()
     release_name = scrapy.Field()
     rhevm_appliance_name = scrapy.Field()
+
+class OvirtNg36Item(scrapy.Item):
+    ngn_tag = scrapy.Field()
+    ngn_squash_fs = scrapy.Field()
+    ngn_iso_name = scrapy.Field()
+    ngn_tools_name = scrapy.Field()
+    ngn_manifest_rpm = scrapy.Field()
+    ngn_image_update = scrapy.Field()
+    ngn_installer_name = scrapy.Field()

@@ -4,41 +4,33 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
-import json
-import codecs
+import pymongo
+from settings import SPIDER_NAME_COLLECTION
 
-
-# class ErrataPipeline(object):
-#
-#     def __init__(self):
-#         self.f = open("result/errata.json", "wb")
-#
-#     def process_item(self, item, spider):
-#         line = json.dumps(dict(item)) + '\n'
-#         self.f.write(line)
-#
-#         return item
-#
-#
-# class CsdnblogPipeline(object):
-#
-#     def __init__(self):
-#         self.file = codecs.open(
-#             'result/CSDNBlog_data.json', mode='wb', encoding='utf-8')
-#
-#     def process_item(self, item, spider):
-#         line = json.dumps(dict(item)) + '\n'
-#         self.file.write(line.decode("unicode_escape"))
-#
-#         return item
 
 class BuildPipeline(object):
 
-    def __init__(self):
-        self.file_name = open("result/build.json", "wb")
+    collection_name = SPIDER_NAME_COLLECTION
+
+    def __init__(self, mongo_uri, mongo_db):
+        self.mongo_uri = mongo_uri
+        self.mongo_db = mongo_db
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(
+            mongo_uri=crawler.settings.get('MONGO_URI'),
+            mongo_db=crawler.settings.get('MONGO_DATABASE', 'items')
+        )
+
+    def open_spider(self, spider):
+        self.client = pymongo.MongoClient(self.mongo_uri)
+        self.db = self.client[self.mongo_db]
+
+    def close_spider(self, spider):
+        self.client.close()
 
     def process_item(self, item, spider):
-        line = json.dumps(dict(item)) + "\n"
-        self.file_name.write(line)
+        self.db[self.collection_name[spider.name]].insert(dict(item))
 
         return item

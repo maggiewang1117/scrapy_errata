@@ -20,7 +20,6 @@ class ErrataSpider(CrawlSpider):
                               callback=self.parse_item)
 
     def parse_item(self, response):
-        self.log("First try!")
         item = ErrataItem()
         # base_url = "https://errata.devel.redhat.com"
 

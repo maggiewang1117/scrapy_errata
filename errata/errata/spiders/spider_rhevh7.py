@@ -1,14 +1,16 @@
 import scrapy
+import pymongo
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from errata.items import ErrataItem, ExtractItem
 from errata.helper.sele_helper import get_kerberos_auth_headers
 from scrapy.contrib.loader import ItemLoader
 from errata.helper.config import url_rhevh7, base_url
 from scrapy.utils.url import urljoin_rfc
+from errata.settings import MONGO_URI, MONGO_DATABASE
 
 class RHEVHSpider(CrawlSpider):
     headers = get_kerberos_auth_headers()
-    name = "scrapy_rhevh"
+    name = "rhevh7"
     allowed_domains = ["redhat.com"]
     start_urls = [url_rhevh7]
 
@@ -21,55 +23,43 @@ class RHEVHSpider(CrawlSpider):
                               callback=self.parse_item)
 
     def parse_item(self, response):
-        self.log("First try!")
         item = ErrataItem()
         base_url = "https://errata.devel.redhat.com"
 
         for td in response.xpath('//tr'):
             a = td.xpath('td')
             # list_text = a.xpath('a/text()').extract()
-            item['advisory'] = a.xpath('a/text()').re(r'^RH.*')
-            item['build_name'] = a.xpath('a/text()').re(r'rhev.*')
-            item['tag'] = a.xpath('text()').re(r'RH.*')
+            if a.xpath('a/text()').re(r'^RH.*'):
+                item['advisory'] = a.xpath('a/text()').re(r'^RH.*')[0]
+            else:
+                continue
+            if a.xpath('a/text()').re(r'rhev.*'):
+                item['build_name'] = a.xpath('a/text()').re(r'rhev.*')[0]
+                if item['build_name'] in self.get_all_verions_from_db():
+                    return
+            if a.xpath('text()').re(r'RH.*'):
+                item['tag'] = a.xpath('text()').re(r'RH.*')[-1]
             
             summary = a.xpath('text()').extract()
             if len(summary) != 0:
                 item['summary'] = summary[2]
             # item['text'] = a.xpath('text()').extract()
             # item['a_text'] = a.xpath('a/text()').extract()
-            item['release_date'] = a.xpath('@title').extract()
+            if a.xpath('@title').extract():
+                item['release_date'] = a.xpath('@title').extract()[0]
             links = a.xpath('a/@href').re('/advi.*')
             if len(links) != 0:
                 item['links'] = urljoin_rfc(base_url, a.xpath('a/@href').re('/advi.*')[0])
+
+            item['ovirt_node_name'] = False
+            item['rhevm_appliance'] = False
             yield item
-            # item['links'] = links[0]
-            # yield item
-            # ext_item = ExtractItem()
-            # ext_item['build_name'] = item.get('text')
-            # print list_text
+            
+    def get_all_verions_from_db(self):
+        cli = pymongo.MongoClient(MONGO_URI)
+        db = cli[MONGO_DATABASE]
 
-            # item['advisory'] = a.xpath('a/text()').extract(0)
-            # item['advisory'] = list_text[0]
-            # item['build_name'] = list_text[1]
-            # print a.xpath('text()').extract()
-            # print a.xpath('text()').extract()
-            # print a.xpath('a/text()').extract()
-            # print a.xpath('text()').extract()
-            # print a.xpath('@title').extract()
-                # item['advisory'] = i.xpath('td/text()').extract()
-                # item['tag'] = i.xpath('td').extract()
-                # item['release_date'] = i.xpath('td/@title').extract()
-                # item['build_name'] = i.xpath('td/text()').extract()
-                # item['summary'] = i.xpath('td/text()').extract()
-                # yield item
-
-
-        # for sel in response.xpath('//tr/td'):
-        #     item = ErrataItem()
-        #     item['tag'] = sel.xpath('a/@title').extract()
-        #     item['link'] = sel.xpath().extract()
-        #     item['desc'] = sel.xpath('text()').extract()
-        #     yield item
-        # item = ErrataItem()
-        # l1 = response.xpath('//tr')
-        # self.log(l1)
+        ret = [i['build_name'] for i in db['rhevh7'].find({}, projection=['build_name'])]
+        
+        cli.close()
+        return ret
