@@ -29,23 +29,38 @@ class FindData(object):
         ovirt_node_list_1 = self.list_ovirt_node()
 
         for i in rhevh7_list_1:
-            res_1 = i["build_name"].split("-")
-            build_version = "-".join(res_1[-1:])
-            f = re.compile(build_version)
-            for j in ovirt_node_list_1:
-                if f.search(str(j['rhevh_name'])):
-                    self.db['buildversion'].update(
-                        {"_id": j['_id']}, {"$set": {"released": True, }})
+        	try:
+	            res_1 = i["build_name"].split("-")
+	            build_version = "-".join(res_1[-1:])
+	            f = re.compile(build_version)
+	            for j in ovirt_node_list_1:
+	                if f.search(str(j['rhevh_name'])):
+	                    self.db['buildversion'].update(
+	                        {"_id": j['_id']}, {"$set": {"released": True, }})
 
-                    self.db['rhevh7'].update(
-                        {"_id": i["_id"]},
-                         {"$set": {"ovirt_node_name": j["ovirt_node_name"],
-                                   "rhevm_appliance": j['rhevm_appliance_name']}})
-                
+	                    self.db['rhevh7'].update(
+	                        {"_id": i["_id"]},
+	                        {"$set": {"ovirt_node_name": j["ovirt_node_name"],
+	                                   "rhevm_appliance": j['rhevm_appliance_name']}})
+	        except KeyError:
+	        	pass
+
+    def find_ovirt_node_in_rhevh7(self):
+    	node_version_list = [i for i in self.db['rhevh7'].find({'build_version': 
+    		{'$regex': ".*"} })]
+    	for i in node_version_list:
+    		build_version = i['build_version']
+    		print i
+    		node_version = i['node_version']
+    		print build_version
+    		buildversion = self.db['rhevh7'].update({'build_name': build_version}, {"$set": {"ovirt_node_name": node_version}})
+    		print buildversion
+    		         
 
 
     def run(self):
         self.find_released_build()
+        self.find_ovirt_node_in_rhevh7()
 
 
 if __name__ == "__main__":

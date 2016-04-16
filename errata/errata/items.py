@@ -51,3 +51,7 @@ class OvirtNg36Item(scrapy.Item):
     ngn_manifest_rpm = scrapy.Field()
     ngn_image_update = scrapy.Field()
     ngn_installer_name = scrapy.Field()
+
+class GetNodeVersionItem(scrapy.Item):
+    build_version = scrapy.Field()
+    node_version = scrapy.Field()
