@@ -16,9 +16,10 @@ NEWSPIDER_MODULE = 'errata.spiders'
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = 'errata (+http://www.yourdomain.com)'
 _MONGOURI_TEST = 'mongodb://127.0.0.1:3001'
-MONGO_URI = _MONGOURI_TEST
+_MONGOURI_PROD = 'mongodb://meteor:redhat@10.66.10.22/meteordb?authMechanism=SCRAM-SHA-1'
+MONGO_URI = _MONGOURI_PROD
 
-MONGO_DATABASE = 'meteor'
+MONGO_DATABASE = 'meteordb'
 
 
 COOKIES_ENABLED = False
@@ -32,8 +33,8 @@ ITEM_PIPELINES = {
 
 
 SPIDER_NAME_COLLECTION = {
-	'build': 'buildversion',
-	'rhevh7': 'rhevh7',
+	'build': 'releaseinfo.buildversion',
+	'rhevh7': 'releaseinfo.rhevh7',
 }
 
 SPIDER_MAP = {

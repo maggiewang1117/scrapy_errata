@@ -77,7 +77,7 @@ class RHEVHSpider(CrawlSpider):
         cli = pymongo.MongoClient(MONGO_URI)
         db = cli[MONGO_DATABASE]
 
-        ret = [i['build_name'] for i in db['rhevh7'].find({}, projection=['build_name'])]
+        ret = [i['build_name'] for i in db['releaseinfo.rhevh7'].find({}, projection=['build_name'])]
         
         cli.close()
         return ret

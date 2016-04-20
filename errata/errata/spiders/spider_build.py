@@ -77,7 +77,7 @@ class BuildSpider(CrawlSpider):
         cli = pymongo.MongoClient(MONGO_URI)
         db = cli[MONGO_DATABASE]
 
-        ret = [i['release_name'] for i in db['buildversion'].find({}, projection=['release_name'])]
+        ret = [i['release_name'] for i in db['releaseinfo.buildversion'].find({}, projection=['release_name'])]
         cli.close()
         print ret
         return ret

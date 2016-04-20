@@ -17,11 +17,11 @@ class FindData(object):
         # self.db = self.cli[MONGO_DATABASE]
 
     def list_rhevh7(self):
-        rhevh7_list = [i for i in self.db["rhevh7"].find({})]
+        rhevh7_list = [i for i in self.db["releaseinfo.rhevh7"].find({})]
         return rhevh7_list
 
     def list_ovirt_node(self):
-        ovirt_node_list = [i for i in self.db["buildversion"].find({})]
+        ovirt_node_list = [i for i in self.db["releaseinfo.buildversion"].find({})]
         return ovirt_node_list
 
     def find_released_build(self):
@@ -35,10 +35,10 @@ class FindData(object):
                 f = re.compile(build_version)
                 for j in ovirt_node_list_1:
                     if f.search(str(j['rhevh_name'])):
-                        self.db['buildversion'].update(
+                        self.db['releaseinfo.buildversion'].update(
                             {"_id": j['_id']}, {"$set": {"released": True, }})
 
-                        self.db['rhevh7'].update(
+                        self.db['releaseinfo.rhevh7'].update(
                             {"_id": i["_id"]},
                             {"$set": {"ovirt_node_name": j["ovirt_node_name"],
                                       "rhevm_appliance": j['rhevm_appliance_name']}})
@@ -46,14 +46,14 @@ class FindData(object):
                 pass
 
     def find_ovirt_node_in_rhevh7(self):
-        node_version_list = [i for i in self.db['rhevh7'].find({'build_version':
+        node_version_list = [i for i in self.db['releaseinfo.rhevh7'].find({'build_version':
                                                                 {'$regex': ".*"}})]
         for i in node_version_list:
             build_version = i['build_version']
             print i
             node_version = i['node_version']
             print build_version
-            buildversion = self.db['rhevh7'].update(
+            buildversion = self.db['releaseinfo.rhevh7'].update(
                 {'build_name': build_version}, {"$set": {"ovirt_node_name": node_version}})
             print buildversion
 
@@ -73,7 +73,7 @@ class FindData(object):
         for k, v in version_dict.items():
         	print k
         	print v
-        	buildversion = self.db['rhevh7'].update(
+        	buildversion = self.db['releaseinfo.rhevh7'].update(
             	{'build_name': k}, {"$set": {"ovirt_node_name": v}})
 
     def run(self):
